@@ -10,11 +10,11 @@ import (
 type Config struct {
   Env string `yaml:"env" env-required:"true" env-default:"production"`
   StoragePath string `yaml:"storage" env-required:"true"`
-  HttpServer 
+  HttpServer `yaml:"http_server"`
 }
 
 type HttpServer struct  {
-  Address string `yaml:"http_server" env-required:"true" env-default:"localhost:3000"`
+  Address string `yaml:"address" env-required:"true" env-default:"localhost:3000"`
 }
 
 func MustLoad() *Config {
@@ -30,9 +30,6 @@ func MustLoad() *Config {
       log.Fatal("config path is not set")
     }
 
-    if _, err := os.Stat(configPath); os.IsNotExist(err) {
-      log.Fatalf("config file does not exist: %s", configPath)
-    }
   }
 
   if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -48,3 +45,4 @@ func MustLoad() *Config {
 
   return &cfg
 }
+
