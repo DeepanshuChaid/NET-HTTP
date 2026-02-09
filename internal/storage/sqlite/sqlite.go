@@ -14,7 +14,7 @@ type Sqlite struct {
 }
 
 func (s *Sqlite) Create(title string, description string, completed bool) (types.Todo, error) {
-	 return types.Todo{}, 
+	 return types.Todo{}, nil
 }
 
 func New(config *config.Config) (*Sqlite, error) {
