@@ -14,7 +14,7 @@ type Sqlite struct {
 }
 
 func (s *Sqlite) Create(title string, description string, completed bool) (types.Todo, error) {
-	s.Db.Pre
+	s.Db.Pr
 }
 
 func New(config *config.Config) (*Sqlite, error) {
