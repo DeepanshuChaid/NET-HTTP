@@ -7,11 +7,12 @@ import (
 	"net/http"
 
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/response"
+	"github.com/DeepanshuChaid/NET-HTTP.git/internal/storage"
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/types"
 	"github.com/go-playground/validator/v10"
 )
 
-func New() http.HandlerFunc {
+func New(storage storage.Storage) http.HandlerFunc {
   return func(w http.ResponseWriter, r *http.Request) {
     var todo types.Todo
 

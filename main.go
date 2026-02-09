@@ -12,15 +12,21 @@ import (
 
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/config"
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/http/handlers/todo"
+	"github.com/DeepanshuChaid/NET-HTTP.git/internal/storage/sqlite"
 )
 
 func main () {
   config := config.MustLoad()
 
+  db, err := sqlite.New()
+  if err != nil {
+    log.Fatal("Error white initiating database")
+  }
+
 
   router := http.NewServeMux()
 
-  router.HandleFunc("/", todo.New())
+  router.HandleFunc("/", todo.New(db))
 
   server := http.Server{
     Addr: config.HttpServer.Address,
