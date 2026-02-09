@@ -31,9 +31,16 @@ func New(storage storage.Storage) http.HandlerFunc {
     if err := validator.New().Struct(todo); err != nil {
       response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
     }
+
+    data, err := storage.Create(
+      todo.Title,
+      todo.Description,
+      todo.Completed,
+    )
+    if err != nil {
+      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+    }
     
-    response.WriteJson(w, http.StatusOK, map[string]string{"success": "OK"}) 
-    
-    w.Write([]byte("Hello, World!"))
+    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data}) 
   }
 }
