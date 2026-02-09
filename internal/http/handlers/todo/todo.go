@@ -1,11 +1,14 @@
-package todo 
+package todo
 
 import (
- "net/http"
-  "github.com/DeepanshuChaid/NET-HTTP.git/internal/types"
-  "encoding/json"
-  "errors"
-  "io"
+	"encoding/json"
+	"errors"
+	"io"
+	"net/http"
+
+	"github.com/DeepanshuChaid/NET-HTTP.git/internal/response"
+	"github.com/DeepanshuChaid/NET-HTTP.git/internal/types"
+	"github.com/go-playground/validator/v10"
 )
 
 func New() http.HandlerFunc {
@@ -14,8 +17,21 @@ func New() http.HandlerFunc {
 
     err := json.NewDecoder(r.Body).Decode(&todo)
     if errors.Is(err, io.EOF) {
-      w.WriteHeader(http.StatusBadRequest)
+      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(errors.New("request body is empty")))
+      return
     }
+
+    if err != nil {
+      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+      return
+    }
+
+    // validate kar behan ke lode
+    if err := validator.New().Struct(todo); err != nil {
+      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+    }
+    
+    response.WriteJson(w, http.StatusOK, map[string]string{"success": "OK"}) 
     
     w.Write([]byte("Hello, World!"))
   }

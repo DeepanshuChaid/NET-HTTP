@@ -1,7 +1,8 @@
 package types
 
 type Todo struct {
-  Title string `json:"title"`
-  Description string `json:"description"`
-  Completed bool `json:"completed"`
+  Id string `json:"id"`
+  Title string `json:"title" validate:"required"`
+  Description string `json:"description" validate:"required"`
+  Completed bool `json:"completed" validate:"required"`
 }
