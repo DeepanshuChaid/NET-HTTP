@@ -21,7 +21,7 @@ func MustLoad() *Config {
   configPath := os.Getenv("CONFIG_PATH")
 
   if configPath == "" {
-    var cfg = flag.String("config", "", "path to config file")
+    cfg := flag.String("config", "", "path to config file")
     flag.Parse()
 
     configPath = *cfg

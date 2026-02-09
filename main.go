@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"log/slog"
 	"net/http"
@@ -8,9 +9,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-  "context"
 
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/config"
+	"github.com/DeepanshuChaid/NET-HTTP.git/internal/http/handlers/todo"
 )
 
 func main () {
@@ -19,9 +20,7 @@ func main () {
 
   router := http.NewServeMux()
 
-  router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("hello i will make a todo list api"))
-  })
+  router.HandleFunc("/", todo.New())
 
   server := http.Server{
     Addr: config.HttpServer.Address,
