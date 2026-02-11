@@ -18,7 +18,7 @@ import (
 func main () {
   config := config.MustLoad()
 
-  db, err := sqlite.New()
+  db, err := sqlite.New(config)
   if err != nil {
     log.Fatal("Error white initiating database")
   }
@@ -26,7 +26,7 @@ func main () {
 
   router := http.NewServeMux()
 
-  router.HandleFunc("/", todo.New(db))
+  router.HandleFunc("POST /", todo.New(db))
 
   server := http.Server{
     Addr: config.HttpServer.Address,
@@ -52,7 +52,7 @@ func main () {
   ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
   defer cancel()
 
-  err := server.Shutdown(ctx)
+  err = server.Shutdown(ctx)
   if err != nil {
     log.Fatalf("cannot shutdown server: %s", err)
   }

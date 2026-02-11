@@ -5,9 +5,9 @@ import "github.com/DeepanshuChaid/NET-HTTP.git/internal/types"
 type Storage interface {
   Create(title string, description string, completed bool) (*types.Todo, error)
   
-  Delete()
-  Update()
-  GetById()
-  GetAll()
+  // Delete()
+  // Update()
+  // GetById()
+  // GetAll()
 }
 
