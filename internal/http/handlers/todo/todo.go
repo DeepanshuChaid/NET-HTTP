@@ -30,6 +30,7 @@ func New(storage storage.Storage) http.HandlerFunc {
     // validate kar behan ke lode
     if err := validator.New().Struct(todo); err != nil {
       response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+      return
     }
 
     data, err := storage.Create(
