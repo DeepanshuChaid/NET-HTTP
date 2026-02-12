@@ -78,6 +78,7 @@ func Delete(storage storage.Storage) http.HandlerFunc {
     num, err := strconv.Atoi(id)
     if err != nil {
       response.WriteJson(w, http.StatusAccepted, response.GeneralError(err))
+      return
     }
 
     data, err := storage.Delete(num)
@@ -101,22 +102,44 @@ func Update(storage storage.Storage) http.HandlerFunc {
     num, err := strconv.Atoi(id)
     if err != nil {
       response.WriteJson(w, http.StatusAccepted, response.GeneralError(err))
+      return
     }
 
     var todo types.Todo
     err = json.NewDecoder(r.Body).Decode(&todo)
     if errors.Is(err, io.EOF) {
       response.WriteJson(w, http.StatusBadRequest, response.GeneralError(errors.New("request body is empty")))
+      return
     }
 
     data, err := storage.Update(num, todo.Title, todo.Description, todo.Completed)
 
     if err != nil {
       response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+      return
     }
 
     response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
 
     
+  }
+}
+
+
+
+// GET ALL
+func GetAll(storage storage.Storage) http.HandlerFunc {
+
+  return func(w http.ResponseWriter, r *http.Request) {
+    
+    data, err := storage.GetAll()
+  
+    if err != nil {
+      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+      return
+    }
+
+    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": data})
+  
   }
 }

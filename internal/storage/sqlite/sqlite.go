@@ -119,6 +119,30 @@ func (s *Sqlite) GetById(id int) (*types.Todo, error) {
 	return &todo, nil
 }
 
+
+// GET ALL
+func (s *Sqlite) GetAll() ([]types.Todo, error) {
+	rows, err := s.Db.Query("SELECT * FROM todos")
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var todos []types.Todo
+
+	for rows.Next() {
+		var todo types.Todo
+		err := rows.Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
+		if err != nil {
+			return nil, err
+		}
+		todos = append(todos, todo)
+	}
+
+	return todos, nil
+}
+
 func New(config *config.Config) (*Sqlite, error) {
 
 	db, err := sql.Open("sqlite3", config.StoragePath)

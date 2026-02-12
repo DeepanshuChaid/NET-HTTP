@@ -10,6 +10,7 @@ type Storage interface {
   Update(id int, title string, description string, completed bool) (*types.Todo, error)
   
   GetById(id int) (*types.Todo, error)
-  // GetAll()
+  
+  GetAll() ([]types.Todo, error)
 }
 
