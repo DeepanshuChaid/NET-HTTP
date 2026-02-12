@@ -58,7 +58,7 @@ func GetById(storage storage.Storage) http.HandlerFunc {
       response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
     }
 
-    data, err := storage.Delete(num)
+    data, err := storage.GetById(num)
     if err != nil {
       response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
       return

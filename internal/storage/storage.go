@@ -7,7 +7,7 @@ type Storage interface {
   
   Delete(id int) (*types.Todo, error)
   // Update()
-  // GetById()
+  GetById(id int) (*types.Todo, error)
   // GetAll()
 }
 

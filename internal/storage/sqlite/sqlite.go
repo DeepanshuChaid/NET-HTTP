@@ -2,6 +2,8 @@ package sqlite
 
 import (
 	"database/sql"
+	"errors"
+
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/types"
 
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/config"
@@ -55,6 +57,29 @@ func (s *Sqlite) Delete(id int) (*types.Todo, error) {
 	err = statement.QueryRow(id).Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
 	if err != nil {
 		return &types.Todo{}, err
+	}
+
+	return &todo, nil
+}
+
+
+// GET BY ID
+func (s *Sqlite) GetById(id int) (*types.Todo, error) {
+	statement, err := s.Db.Prepare("SELECT * FROM todos WHERE id = ? LIMIT 1")
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	defer statement.Close()
+
+	var todo types.Todo
+	err = statement.QueryRow(id).Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	if todo == (types.Todo{}) {
+	return nil, errors.New("todo not found")
 	}
 
 	return &todo, nil
