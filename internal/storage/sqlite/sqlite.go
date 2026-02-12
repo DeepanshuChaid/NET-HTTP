@@ -22,7 +22,6 @@ func (s *Sqlite) Create(title string, description string, completed bool) (*type
 
 	defer statement.Close()
 
-
 	result, err := statement.Exec(title, description, completed)
 	if err != nil {
 		return &types.Todo{}, err
@@ -34,13 +33,31 @@ func (s *Sqlite) Create(title string, description string, completed bool) (*type
 	}
 
 	data := types.Todo{
-		Id: lastId,
-		Title: title,
+		Id:          lastId,
+		Title:       title,
 		Description: description,
-		Completed: completed,
+		Completed:   completed,
 	}
-			
+
 	return &data, nil
+}
+
+// DELETE
+func (s *Sqlite) Delete(id int) (*types.Todo, error) {
+	statement, err := s.Db.Prepare("DELETE FROM todos WHERE id = ? LIMIT 1")
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	defer statement.Close()
+
+	var todo types.Todo
+	err = statement.QueryRow(id).Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	return &todo, nil
 }
 
 func New(config *config.Config) (*Sqlite, error) {
@@ -56,14 +73,12 @@ func New(config *config.Config) (*Sqlite, error) {
 		description TEXT NOT NULL UNIQUE,
 		completed BOOLEAN NOT NULL
 	)`)
-	
+
 	if err != nil {
 		return nil, err
 	}
 
-	
 	return &Sqlite{
 		Db: db,
 	}, nil
 }
-

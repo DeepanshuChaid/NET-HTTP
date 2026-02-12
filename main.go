@@ -26,7 +26,9 @@ func main () {
 
   router := http.NewServeMux()
 
-  router.HandleFunc("POST /", todo.New(db))
+  router.HandleFunc("POST /create", todo.New(db))
+
+  router.HandleFunc("GET /get/{id}", todo.GetById(db))
 
   server := http.Server{
     Addr: config.HttpServer.Address,

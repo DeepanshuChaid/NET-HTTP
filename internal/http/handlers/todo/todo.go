@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+  "strconv"
 	"net/http"
 
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/response"
@@ -45,3 +46,25 @@ func New(storage storage.Storage) http.HandlerFunc {
     response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data}) 
   }
 }
+
+func GetById(storage storage.Storage) http.HandlerFunc {
+  return func(w http.ResponseWriter, r *http.Request) {
+    id := r.PathValue("id")
+
+    // Convert string to int
+    num, err := strconv.Atoi(id)
+    if err != nil {
+        // handle error
+      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+    }
+
+    data, err := storage.Delete(num)
+    if err != nil {
+      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+      return
+    }
+
+    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
+    
+  }
+} 
