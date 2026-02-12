@@ -30,6 +30,10 @@ func main () {
 
   router.HandleFunc("GET /get/{id}", todo.GetById(db))
 
+  router.HandleFunc("DELETE /delete/{id}", todo.Delete(db))
+
+  router.HandleFunc("PUT /update/{id}", todo.Update(db))
+
   server := http.Server{
     Addr: config.HttpServer.Address,
     Handler: router,

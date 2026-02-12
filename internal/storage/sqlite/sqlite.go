@@ -15,6 +15,31 @@ type Sqlite struct {
 	Db *sql.DB
 }
 
+// UPDATE
+func (s *Sqlite) Update(id int, title string, description string, completed bool) (*types.Todo, error) {
+	statement, err := s.Db.Prepare("UPDATE todos SET title = ?, description = ?, completed = ? WHERE id = ?")
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	defer statement.Close()
+
+	_, err = statement.Exec(title, description, completed, id)
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	var todo types.Todo
+	err = s.Db.QueryRow("SELECT * FROM todos WHERE id = ?", id).Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
+
+	if err != nil {
+		return &types.Todo{}, err
+	}
+
+	return &todo, nil
+}
+
+
 func (s *Sqlite) Create(title string, description string, completed bool) (*types.Todo, error) {
 
 	statement, err := s.Db.Prepare("INSERT INTO todos (title, description, completed) VALUES (?, ?, ?)")
@@ -44,19 +69,28 @@ func (s *Sqlite) Create(title string, description string, completed bool) (*type
 	return &data, nil
 }
 
+
 // DELETE
 func (s *Sqlite) Delete(id int) (*types.Todo, error) {
-	statement, err := s.Db.Prepare("DELETE FROM todos WHERE id = ? LIMIT 1")
+	var todo types.Todo
+
+	// 1️⃣ Get the row first
+	err := s.Db.QueryRow(
+		"SELECT id, title, description, completed FROM todos WHERE id = ?",
+		id,
+	).Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
+
 	if err != nil {
-		return &types.Todo{}, err
+		if err == sql.ErrNoRows {
+			return nil, errors.New("todo not found")
+		}
+		return nil, err
 	}
 
-	defer statement.Close()
-
-	var todo types.Todo
-	err = statement.QueryRow(id).Scan(&todo.Id, &todo.Title, &todo.Description, &todo.Completed)
+	// 2️⃣ Then delete it
+	_, err = s.Db.Exec("DELETE FROM todos WHERE id = ?", id)
 	if err != nil {
-		return &types.Todo{}, err
+		return nil, err
 	}
 
 	return &todo, nil

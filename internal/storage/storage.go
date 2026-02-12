@@ -6,7 +6,9 @@ type Storage interface {
   Create(title string, description string, completed bool) (*types.Todo, error)
   
   Delete(id int) (*types.Todo, error)
-  // Update()
+  
+  Update(id int, title string, description string, completed bool) (*types.Todo, error)
+  
   GetById(id int) (*types.Todo, error)
   // GetAll()
 }
