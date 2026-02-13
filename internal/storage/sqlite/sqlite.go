@@ -39,7 +39,6 @@ func (s *Sqlite) Update(id int, title string, description string, completed bool
 	return &todo, nil
 }
 
-
 func (s *Sqlite) Create(title string, description string, completed bool) (*types.Todo, error) {
 
 	statement, err := s.Db.Prepare("INSERT INTO todos (title, description, completed) VALUES (?, ?, ?)")
@@ -69,7 +68,6 @@ func (s *Sqlite) Create(title string, description string, completed bool) (*type
 	return &data, nil
 }
 
-
 // DELETE
 func (s *Sqlite) Delete(id int) (*types.Todo, error) {
 	var todo types.Todo
@@ -96,7 +94,6 @@ func (s *Sqlite) Delete(id int) (*types.Todo, error) {
 	return &todo, nil
 }
 
-
 // GET BY ID
 func (s *Sqlite) GetById(id int) (*types.Todo, error) {
 	statement, err := s.Db.Prepare("SELECT * FROM todos WHERE id = ? LIMIT 1")
@@ -113,12 +110,11 @@ func (s *Sqlite) GetById(id int) (*types.Todo, error) {
 	}
 
 	if todo == (types.Todo{}) {
-	return nil, errors.New("todo not found")
+		return nil, errors.New("todo not found")
 	}
 
 	return &todo, nil
 }
-
 
 // GET ALL
 func (s *Sqlite) GetAll() ([]types.Todo, error) {
@@ -153,7 +149,7 @@ func New(config *config.Config) (*Sqlite, error) {
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS todos (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title TEXT NOT NULL,
-		description TEXT NOT NULL UNIQUE,
+		description TEXT NOT NULL,
 		completed BOOLEAN NOT NULL
 	)`)
 

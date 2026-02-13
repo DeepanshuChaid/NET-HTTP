@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-  "strconv"
 	"net/http"
+	"strconv"
 
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/response"
 	"github.com/DeepanshuChaid/NET-HTTP.git/internal/storage"
@@ -14,132 +14,127 @@ import (
 )
 
 func New(storage storage.Storage) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    var todo types.Todo
+	return func(w http.ResponseWriter, r *http.Request) {
+		var todo types.Todo
 
-    err := json.NewDecoder(r.Body).Decode(&todo)
-    if errors.Is(err, io.EOF) {
-      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(errors.New("request body is empty")))
-      return
-    }
+		err := json.NewDecoder(r.Body).Decode(&todo)
+		if errors.Is(err, io.EOF) {
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(errors.New("request body is empty")))
+			return
+		}
 
-    if err != nil {
-      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
-      return
-    }
+		if err != nil {
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+			return
+		}
 
-    // validate kar behan ke lode
-    if err := validator.New().Struct(todo); err != nil {
-      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
-      return
-    }
+		// validate kar behan ke lode
+		if err := validator.New().Struct(todo); err != nil {
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+			return
+		}
 
-    data, err := storage.Create(
-      todo.Title,
-      todo.Description,
-      todo.Completed,
-    )
-    if err != nil {
-      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-    }
-    
-    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data}) 
-  }
+		data, err := storage.Create(
+			todo.Title,
+			todo.Description,
+			todo.Completed,
+		)
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
+
+		response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
+	}
 }
 
 func GetById(storage storage.Storage) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    id := r.PathValue("id")
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
 
-    // Convert string to int
-    num, err := strconv.Atoi(id)
-    if err != nil {
-        // handle error
-      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
-    }
+		// Convert string to int
+		num, err := strconv.Atoi(id)
+		if err != nil {
+			// handle error
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
+		}
 
-    data, err := storage.GetById(num)
-    if err != nil {
-      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-      return
-    }
+		data, err := storage.GetById(num)
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
 
-    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
-    
-  }
-} 
+		response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
 
-
-func Delete(storage storage.Storage) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    id := r.PathValue("id")
-
-    // Convert string to int
-    num, err := strconv.Atoi(id)
-    if err != nil {
-      response.WriteJson(w, http.StatusAccepted, response.GeneralError(err))
-      return
-    }
-
-    data, err := storage.Delete(num)
-    if err != nil {
-      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-      return
-    }
-
-    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
-  }
+	}
 }
 
+func Delete(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
 
+		// Convert string to int
+		num, err := strconv.Atoi(id)
+		if err != nil {
+			response.WriteJson(w, http.StatusAccepted, response.GeneralError(err))
+			return
+		}
+
+		data, err := storage.Delete(num)
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
+
+		response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
+	}
+}
 
 // UPDATE
 func Update(storage storage.Storage) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    
-    id := r.PathValue("id")
-    // Convert string to int
-    num, err := strconv.Atoi(id)
-    if err != nil {
-      response.WriteJson(w, http.StatusAccepted, response.GeneralError(err))
-      return
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
 
-    var todo types.Todo
-    err = json.NewDecoder(r.Body).Decode(&todo)
-    if errors.Is(err, io.EOF) {
-      response.WriteJson(w, http.StatusBadRequest, response.GeneralError(errors.New("request body is empty")))
-      return
-    }
+		id := r.PathValue("id")
+		// Convert string to int
+		num, err := strconv.Atoi(id)
+		if err != nil {
+			response.WriteJson(w, http.StatusAccepted, response.GeneralError(err))
+			return
+		}
 
-    data, err := storage.Update(num, todo.Title, todo.Description, todo.Completed)
+		var todo types.Todo
+		err = json.NewDecoder(r.Body).Decode(&todo)
+		if errors.Is(err, io.EOF) {
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(errors.New("request body is empty")))
+			return
+		}
 
-    if err != nil {
-      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-      return
-    }
+		data, err := storage.Update(num, todo.Title, todo.Description, todo.Completed)
 
-    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
 
-    
-  }
+		response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": *data})
+
+	}
 }
-
-
 
 // GET ALL
 func GetAll(storage storage.Storage) http.HandlerFunc {
 
-  return func(w http.ResponseWriter, r *http.Request) {
-    
-    data, err := storage.GetAll()
-  
-    if err != nil {
-      response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
-      return
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
 
-    response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": data})
-  
-  }
+		data, err := storage.GetAll()
+
+		if err != nil {
+			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
+			return
+		}
+
+		response.WriteJson(w, http.StatusOK, map[string]any{"success": "OK", "data": data})
+
+	}
 }

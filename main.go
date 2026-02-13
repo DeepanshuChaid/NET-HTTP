@@ -34,7 +34,7 @@ func main () {
 
   router.HandleFunc("PUT /update/{id}", todo.Update(db))
 
-  router.HandleFunc("GET /all", todo.GetAll(db)
+  router.HandleFunc("GET /all", todo.GetAll(db))
 
   server := http.Server{
     Addr: config.HttpServer.Address,
